@@ -3,38 +3,53 @@
     <head>
         <meta charset="utf-8">
         <title>Sign IN</title>
+        <link rel="stylesheet" type="text/css" href="progress.css">
         <style type="text/css">
             #status {
-                width: 150px;
+                width: 300px;
+            }
+            .submit-button {
+                display: block;
+                margin: 12px;
+            }
+            input {
+                margin: 5px;
             }
         </style>
     </head>
     <body>
+        <h2>My Feed</h2>
         <div id="save-link">
             <div id="status">
 
             </div>
         </div>
 
-        <div id="signup">
-            <form>
-                <input type="text" name="username" placeholder="Enter username" />
-                <input type="password" name="password" placeholder="Enter password" />
-                <button type="submit" id="signup-button">Sign Up</button>
-            </form>
-            <a id="show-login"> Sign In </a>
+        <div id="auth">
+            <div id="signup">
+                <form>
+                    <input class="input" type="text" name="username" placeholder="Enter username" />
+                    <input class="input" type="password" name="password" placeholder="Enter password" />
+                    <button type="submit" class="submit-button" id="signup-button">Sign Up</button>
+                </form>
+                <a id="show-login"> Sign In here </a>
+            </div>
+
+            <div id="login">
+                <form>
+                    <input class="input" type="text" name="username" placeholder="Enter username" />
+                    <input class="input" type="password" name="password" placeholder="Enter password" />
+                    <button type="submit" class="submit-button" id="login-button">Sign In</button>
+                    <a id="show-signup">No Account? Sign Up here</a>
+                </form>
+            </div>
         </div>
 
-        <div id="login">
-            <form>
-                <input type="text" name="username" placeholder="Enter username" />
-                <input type="password" name="password" placeholder="Enter password" />
-                <button type="submit" id="login-button">Sign In</button>
-                <a id="show-signup"> Sign Up </a>
-            </form>
-        </div>
+            <div class="loader8"></div>
+
 
         <button id="logout">Log out</button>
+        <script type="text/javascript" src="axios.min.js"></script>
         <script type="text/javascript" src="ext.js"></script>
     </body>
 </html>

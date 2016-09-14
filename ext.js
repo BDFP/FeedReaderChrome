@@ -50,6 +50,11 @@
         })
     }
 
+    var AuthService = {
+        login: () => {},
+        signup: () => {}
+    }
+
     var Storage = {
         add: (key, val) => window.localStorage[key] = val,
         get: (key) => window.localStorage[key],
