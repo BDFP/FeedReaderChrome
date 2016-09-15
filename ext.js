@@ -46,20 +46,48 @@
     function saveLink() {
         getCurrentTabUrl(function (link) {
             console.log('The link to be saved', link);
-            document.querySelector('#status').innerHTML = '<h3>Your link was saved</h3>';
+            document.querySelector('#status').innerHTML =
+                `<h3>Your link was  saved</h3>`;
         })
     }
 
+    var BASE_URL = "http://localhost:8080/";
+
     var AuthService = {
-        login: () => {},
-        signup: () => {}
-    }
+        login: (user) => {
+            axios.post(BASE_URL + 'api/login', user)
+                .then((response) => {
+                    console.log(response);
+                    DOM.showProgress(false);
+                    Ext.showConsole();
+                })
+                .catch((reason) => {
+                    console.log(reason);
+                    DOM.showProgress(false);
+                    Ext.showError(reason);
+                })
+        },
+        signup: (user) => {
+            console.log('Sign up called');
+            axios.post(BASE_URL + 'api/signup', user)
+                .then((response) => {
+                    console.log(response);
+                    DOM.showProgress(false);
+                    Ext.showConsole();
+                })
+                .catch((reason) => {
+                    console.log(reason);
+                    DOM.showProgress(false);
+                    Ext.showError(reason);
+                })
+        }
+    };
 
     var Storage = {
         add: (key, val) => window.localStorage[key] = val,
         get: (key) => window.localStorage[key],
         remove: (key) => window.localStorage[key] = ''
-    }
+    };
 
     var DOM = {
         hide: (domElement) => {
@@ -78,59 +106,117 @@
                         })
                 }
             );
+        },
+        showProgress: (show) => {
+            var progress = document.querySelector('.loader8');
+            if (show) { 
+                DOM.show(progress);
+            } else {
+                DOM.hide(progress);
+            }
         }
     };
 
-    var Ext = {
-        showAuth: () => {
-            var signUpForm = document.querySelector('#signup'),
-                loginForm = document.querySelector('#login');
+    var Ext = function() {};
 
-            var signUpToggle = document.querySelector('#show-login'),
-                loginToggle = document.querySelector('#show-signup');
+    Ext.init = function() {
+        this.signUpForm = document.querySelector('#signup');
+        this.loginForm = document.querySelector('#login');
 
-            var saveConsole = document.querySelector("#save-link");
+        this.signUpToggle = document.querySelector('#show-login');
+        this.loginToggle = document.querySelector('#show-signup');
 
-            var logOut = document.querySelector('#logout');
+        this.saveConsole = document.querySelector("#save-link");
 
+        this.logOut = document.querySelector('#logout');
 
-            DOM.hide(saveConsole);
-            DOM.show(loginForm);
-            DOM.hide(signUpForm);
-            DOM.hide(logOut);
-            DOM.setUpToggle([
-                    {
-                        trigger: signUpToggle,
-                        show: loginForm,
-                        hide: signUpForm
-                    },
-                    {
-                        trigger: loginToggle,
-                        show: signUpForm,
-                        hide: loginForm
-                    }
-                ]);
+        this.loginUsername = document.querySelector('#login-username');
+        this.loginPassword = document.querySelector('#login-password');
 
+        this.signupUsername = document.querySelector('#signup-username');
+        this.signupPassword = document.querySelector('#signup-password');
+    };
 
-        },
-        removeAuth: () => {
-            var signUpForm = document.querySelector('#signup'),
-                loginForm = document.querySelector('#login');
+    Ext.showAuth = function() {
+        DOM.hide(this.saveConsole);
+        DOM.show(this.loginForm);
+        DOM.hide(this.signUpForm);
+        DOM.hide(this.logOut);
+        DOM.setUpToggle([
+                {
+                    trigger: this.signUpToggle,
+                    show: this.loginForm,
+                    hide: this.signUpForm
+                },
+                {
+                    trigger: this.loginToggle,
+                    show: this.signUpForm,
+                    hide: this.loginForm
+                }
+            ]);
+        DOM.showProgress(false);
 
-            DOM.hide(signUpForm);
-            DOM.hide(loginForm);
-        },
-        setUpLogout: () => {
-            var logOut = document.querySelector('#logout');
-            logOut.addEventListener('click', () => {
-                        Storage.remove('username');
-                        Ext.showAuth();
-                    })
+        document.querySelector('#signup-button')
+            .addEventListener('click', (event) => {
+                event.preventDefault();
+                DOM.showProgress(true);
+                AuthService.signup(Ext.getUserDetails(false))
+            });
+
+        document.querySelector('#login-button')
+            .addEventListener('click', (event) => {
+                event.preventDefault();
+                DOM.showProgress(true);
+                AuthService.login(Ext.getUserDetails(true))
+            });
+    };
+    
+    Ext.removeAuth = function () {
+        var signUpForm = document.querySelector('#signup'),
+            loginForm = document.querySelector('#login');
+
+        DOM.hide(signUpForm);
+        DOM.hide(loginForm);
+    };
+    
+    Ext.showConsole = function() {
+        DOM.show(this.saveConsole);
+        DOM.hide(this.loginForm);
+        DOM.hide(this.signUpForm);
+        DOM.show(this.logOut);
+        Ext.setUpLogout();
+    };
+    
+    Ext.setUpLogout = function() {
+        var logOut = document.querySelector('#logout');
+        logOut.addEventListener('click', () => {
+                    Storage.remove('username');
+                    Ext.showAuth();
+                })
+    };
+    
+    Ext.getUserDetails = function(isLogin) {
+        if (isLogin) {
+            return {
+                username: this.loginUsername.value,
+                password: this.loginPassword.value
+            }
+        } else {
+            return {
+                username: this.signupUsername.value,
+                password: this.signupPassword.value
+            }
         }
-    }
+    };
+    
+    Ext.showError = function(reason) {
+        var msg = document.querySelector('.msg');
+        msg.textContent = reason;
+    };
 
     document.addEventListener('DOMContentLoaded', function () {
         var username = getUsername();
+        Ext.init();
 
         if (username) {
             saveLink();
